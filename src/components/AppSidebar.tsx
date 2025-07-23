@@ -2,14 +2,14 @@
 
 import { Bell, Bookmark, CircleEllipsis, Hash, Home,  LayoutList,  Mail, Twitter, User } from "lucide-react"
 
-import {
-  SignInButton,
-  SignUpButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
-  useUser,
-} from '@clerk/nextjs'
+// import {
+//   SignInButton,
+//   SignUpButton,
+//   SignedIn,
+//   SignedOut,
+//   UserButton,
+//   useUser,
+// } from '@clerk/nextjs'
 
 import {
   Sidebar,
@@ -76,12 +76,16 @@ const items = [
 
 export function AppSidebar() {
 
-  const { isLoaded, isSignedIn, user } = useUser();
-
-  if (isLoaded && isSignedIn && user) {
-    const userEmail = user?.emailAddresses[0]?.emailAddress || null;
-    const userFullName = user?.fullName;
+  const handleLogout = () => {
+    localStorage.removeItem('user');
   }
+
+  // const { isLoaded, isSignedIn, user } = useUser();
+
+  // if (isLoaded && isSignedIn && user) {
+  //   const userEmail = user?.emailAddresses[0]?.emailAddress || null;
+  //   const userFullName = user?.fullName;
+  // }
 
   return (
     <Sidebar>
@@ -113,7 +117,7 @@ export function AppSidebar() {
 
 
       <SidebarFooter>
-        <SignedOut>
+        {/* <SignedOut>
           <div className="flex justify-between">
             <Button className="bg-[#1DA1F2] hover:bg-[#3b71bd]">
               <SignInButton />
@@ -131,7 +135,10 @@ export function AppSidebar() {
               <p className="text-gray-500 text-[.7rem]">{user?.emailAddresses[0]?.emailAddress}</p>
             </div>
           </div>
-        </SignedIn>
+        </SignedIn> */}
+        <Button onClick={handleLogout}>
+          Sign Out
+        </Button>
       </SidebarFooter>
     </Sidebar>
   )

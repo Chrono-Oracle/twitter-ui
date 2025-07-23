@@ -2,6 +2,9 @@
 import connectDB from "../../../db/connectDB";
 import Image from "../../../model/Image";
 
+import Post from "../../../model/Post";
+import User from "../../../model/User";
+
 import { v2 as cloudinary } from 'cloudinary';
 
 import { NextResponse } from "next/server";
@@ -36,7 +39,7 @@ export const POST = async (request) => {
     // get the image data from the request body
     const { image, type, userId, postId } = await request.json();
     const entityId = postId || userId;
-
+    console.log("image sent :::", image);
     //  Configuration
     cloudinary.config({
       cloud_name: "ding7qcjw",
@@ -61,7 +64,7 @@ export const POST = async (request) => {
 
     // create a new image instance
     const newImage = new Image({
-      ImageUrl: uploadResult?.secure_url,
+      Image: uploadResult?.secure_url,
       Type: type,
       PostId: postId,
       UserId: userId,
@@ -72,9 +75,21 @@ export const POST = async (request) => {
         await Post.findByIdAndUpdate(postId, {
             MediaFile: {
                 url: uploadResult?.secure_url,
-                fileTYpe: uploadResult?.resource_type || 'image',
+                fileType: uploadResult?.resource_type || 'image',
             },
         });
+    }
+
+    if ( type === 'profile' && userId ) {
+      await User.findByIdAndUpdate(userId, {
+        ProfileImage: uploadResult?.secure_url
+      });
+    }
+
+    if ( type === 'cover' && userId ) {
+      await User.findByIdAndUpdate(userId, {
+        CoverImage: uploadResult?.secure_url
+      });
     }
 
     // save the image to the database
@@ -86,7 +101,7 @@ export const POST = async (request) => {
     // return the created image as a JSON response
     return new NextResponse(JSON.stringify(newImage), { status: 201 });
   } catch (error) {
-    console.error("Error adding image:", error);
+    console.log("Error adding image:", error);
     return new NextResponse(
       JSON.stringify({ error: "Failed to add image", error }),
       { status: 500 }

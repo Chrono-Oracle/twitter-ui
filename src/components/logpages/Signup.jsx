@@ -1,227 +1,182 @@
-'use client'
+"use client";
+import React from "react";
 
-import React from 'react'
-import Link from 'next/link'
-import { useState } from 'react';
-import { FaGoogle, FaFacebookF, FaTiktok } from "react-icons/fa";
+import { SignUpButton } from "@clerk/nextjs";
+import Link from "next/link";
+import { Facebook, CircleG } from "lucide-react";
+import { FaTwitter } from "react-icons/fa";
+import { FcGoogle } from "react-icons/fc";
 
-import { SignUpButton } from '@clerk/nextjs'
+import { redirect, useRouter } from "next/navigation";
 
-const SignUp = () => {
-
-    const [showPassword, setShowPassword] = useState(false);
-    const [showConfirm, setShowConfirm] = useState(false);
-
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
-
-    const [errors, setErrors] = useState({
-        name: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-    });
-
-    const validate = () => {
-        const newErrors = {
-        name: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-        };
+import { ToastContainer, toast } from 'react-toastify';
+import axios from "axios";
 
 
-    if (/\d/.test(name)) {
-    newErrors.name = "Name must not contain numbers.";
+const Signup = () => {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [Name , setName] = React.useState("");
+  const [Phone , setPhone] = React.useState("");
+  const [Email , setEmail] = React.useState("");
+  const [Password , setPassword] = React.useState("");
+  const [ConfirmPassword , setConfirmPassword] = React.useState("");
+   const validation =()=>{
+        if(!Name || !Email || !Password || !ConfirmPassword){
+         setIsLoading(false);
+         toast.error("Please fill all fields");
+         return;
+        }
+        if(Password !== ConfirmPassword){
+          setIsLoading(false);
+         toast.error("Please fill all fields");
+         return;
+        }
+   }
+     const Payload = {
+        Name,
+        Email,
+        Password,
+        ConfirmPassword,
+        Phone
+     }
+
+    const handleSignup = async () => {
+      console.log("Sign Up", Payload);
+      setIsLoading(true);
+      validation();
+
+      await axios.post(`http://localhost:3000/api/users`, Payload).then( result => {
+        toast.success("User Created Successfully");
+        console.log(result.data);
+
+        setIsLoading(false);
+        router.push("/")
+      }).catch ( error => {
+        setIsLoading(false);
+        toast.error("Registration Failed. Try again.");
+        console.log(error);
+      })
+      
     }
-
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    newErrors.email = "Invalid email format.";
-    }
-
-    const passwordRegex =
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{6,}$/;
-    if (!passwordRegex.test(password)) {
-    newErrors.password =
-        "Password must include uppercase, lowercase, number, and symbol.";
-    }
-
-    if (password !== confirmPassword) {
-    newErrors.confirmPassword = "Passwords do not match.";
-    }
-
-    setErrors(newErrors);
-    return Object.values(newErrors).every((err) => err === "");
-
-
-
-    };
-
-    const handleNameChange = (e) => {
-        const value = e.target.value;
-        setName(value);
-        setErrors((prev) => ({
-        ...prev,
-        name: /\d/.test(value) ? "Name must not contain numbers." : "",
-        }));
-    };
-
-    const handleEmailChange = (e) => {
-        const value = e.target.value;
-        setEmail(value);
-        setErrors((prev) => ({
-        ...prev,
-        email: /^[^\s@]+@[^\s@]+.[^\s@]+$/.test(value)
-            ? ""
-            : "Invalid email format.",
-        }));
-    };
-
-    const handlePasswordChange = (e) => {
-        const value = e.target.value;
-        setPassword(value);
-        const passwordRegex =
-        /^(?=.[a-z])(?=.[A-Z])(?=.\d)(?=.[\W_]).{6,}$/;
-        setErrors((prev) => ({
-        ...prev,
-        password: passwordRegex.test(value)
-            ? ""
-            : "Password must include uppercase, lowercase, number, and symbol.",
-        }));
-    };
-
-    const handleConfirmPasswordChange = (e) => {
-        const value = e.target.value;
-        setConfirmPassword(value);
-        setErrors((prev) => ({
-        ...prev,
-        confirmPassword:
-            value === password ? "" : "Passwords do not match.",
-        }));
-    };
-
-const handleSubmit = (e) => {
-    e.preventDefault();
-    if (validate()) {
-      alert("creating your account dont close this screen!");
-      // Submit form logic here
-    }
-  };
 
   return (
-    <main id='signup' className=' grid grid-cols-2 gap-x-[1rem]'>
-        <section id='left-side' className="h-screen rounded-3xl"></section>
-        <section id='right-side' className="h-screen w-[35rem]">
-            <div className="grid items-center justify-center h-screen bg-white/10 backdrop-blur-lg shadow-xl p-10 border border-white/10">
-                <form  className="space-y-5 w-[20rem] onSubmit={handleSubmit}>">
-                    <div className="text-white">
-                        <h2 className="text-3xl font-bold mb-6">Create an account</h2>
-                        <p className="">Already have an account? <Link href="/log-pages">Sign in</Link></p>
-                    </div>
+ <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4 py-8 sm:px-6 lg:px-8">
+      <div className="bg-white rounded-xl shadow-lg overflow-hidden flex flex-col md:flex-row w-full max-w-5xl">
+        {/* Left Side Image */}
+        <div className="md:w-1/2 h-64 md:h-auto">
+          <img
+            src="/sign.jpg"
+            alt="Contact"
+            className="w-full h-full object-cover"
+          />
+        </div>
 
-                    <div className='text-white'>
-                        <label className="block mb-1 text-sm ">Full Name</label>
-                        <input
-                        type="text"
-                        onChange={handleNameChange}
-                        placeholder="John Doe"
-                        className="w-full px-4 py-2 rounded-3xl bg-white/30 placeholder-gray-600 border  focus:outline-none focus:ring-2 focus:ring-[#1DA1F2]"
-                        />
-                        {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
-                    </div>
+        {/* Right Side Form */}
+        <form className="md:w-1/2 p-6 sm:p-8 w-full">
+           <ToastContainer position="top-center" />
+          <div className="flex flex-col items-center w-full">
+            <FaTwitter color={"#03A2C2"} size={40} />
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">Sign Up</h2>
+          </div>
+          <div className="flex gap-4 mb-6 cursor-pointer">
+            <SignUpButton mode="redirect" redirect_url="/">
+              <button
+                type="button"
+                className="flex items-center justify-center gap-2 flex-1 font-bold bg-[#000] text-white py-2 rounded-md  transition"
+              >
+                <FcGoogle />
+                Google
+              </button>
+            </SignUpButton>
 
-                    {/* <div className='text-white'>
-                        <label className="block mb-1 text-sm ">Username</label>
-                        <input
-                        type="text"
-                        placeholder="mafiagangster"
-                        className="w-full px-4 py-2 rounded-3xl bg-white/30 placeholder-gray-600 border  focus:outline-none focus:ring-2 focus:ring-[#1DA1F2]"
-                        />
-                    </div> */}
+            <SignUpButton mode="redirect" redirect_url="/">
+              <button
+                type="button"
+                className="flex items-center justify-center gap-2 flex-1 bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition"
+              >
+                <Facebook size={18} />
+                Facebook
+              </button>
+            </SignUpButton>
+          </div>
 
-                    <div className='text-white'>
-                        <label className="block mb-1 text-sm ">Email</label>
-                        <input
-                        type="email"
-                        onChange={handleEmailChange}
-                        placeholder="user@email.com"
-                        className="w-full px-4 py-2 rounded-3xl bg-white/30 placeholder-gray-600 border  focus:outline-none focus:ring-2 focus:ring-[#1DA1F2]"
-                        />
-                        {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
-                    </div>
-
-                    <div className='text-white'>
-                        <label className="block mb-1 text-sm ">Password</label>
-                        <div className="relative">
-                        <input
-                            type={showPassword ? "text" : "password"}
-                            className="w-full px-4 py-2 rounded-3xl bg-white/30  placeholder-gray-600 border border-white focus:outline-none focus:ring-2 focus:ring-[#1DA1F2]"
-                            onChange={handlePasswordChange}
-                        />
-                        
-                            <button
-                                type="button"
-                                onClick={() => setShowPassword(!showPassword)}
-                                className="absolute inset-y-0 right-3 flex items-center text-sm text-white"
-                            >
-                                {showPassword ? "Hide" : "Show"}
-                            </button>
-                        </div>
-                        {errors.password && (<p className="text-red-500 text-sm">{errors.password}</p>)}
-                    </div>
-
-                    <div className='text-white'>
-                        <label className="block mb-1 text-sm ">Confirm Password</label>
-                        <div className="relative">
-                        <input
-                            type={showConfirm ? "text" : "password"}
-                            value={confirmPassword}
-                            onChange={handleConfirmPasswordChange}
-                            className="w-full px-4 py-2 rounded-3xl bg-white/30 text-white placeholder-gray-600 border border-white focus:outline-none focus:ring-2 focus:ring-[#1DA1F2]"
-                        />
-                        <button
-                            type="button"
-                            onClick={() => setShowConfirm(!showConfirm)}
-                            className="absolute inset-y-0 right-3 flex items-center text-sm text-white"
-                        >
-                            {showConfirm ? "Hide" : "Show"}
-                        </button>
-                        </div>
-                        {errors.confirmPassword && (<p className="text-red-500 text-sm">{errors.confirmPassword}</p>)}
-                    </div>
-
-
-                </form>
-
-                <button
-                        type="submit"
-                        className="w-full bg-[#1DA1F2] hover:bg-purple-600 transition text-white py-2 rounded-3xl font-medium"
-                    >
-                        Sign Up
-                    </button>
-
-                    <div className=" grid justify-center gap-y-[1rem]">
-                        <span className="text-white">or sign up with</span>
-                        
-                        <div className="flex justify-center gap-x-[2rem]">
-                            <SignUpButton mode='redirect' redirect_url='/home'>
-                                <FaGoogle color='white' />
-                            </SignUpButton>
-                            <SignUpButton mode='redirect' redirect_url='/home'>
-                                <FaFacebookF color='white' />
-                            </SignUpButton>
-                            <SignUpButton mode='redirect' redirect_url='/home'>
-                                <FaTiktok color='white' />
-                            </SignUpButton>
-                        </div>
-                    </div>
-
+          <div className="space-y-4">
+            <div>
+              <label className="block text-gray-700">Name</label>
+              <input
+                type="text"
+                placeholder="Your Name"
+                name="name"
+                value={Name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
             </div>
-        </section>
-    </main>
-  )
-}
+            <div>
+              <label className="block text-gray-700">Phone</label>
+              <input
+                type="text"
+                placeholder="Your Phone"
+                name="Phone"
+                value={Phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-gray-700">Email</label>
+              <input
+                type="email"
+                name="email"
+                value={Email}
+                onChange={(e)=> setEmail(e.target.value)}
+                placeholder="Your Email"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-gray-700">Password</label>
+              <input
+                type="text"
+                placeholder="Password"
+                name="password"
+                value={Password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-gray-700">Confirm Password</label>
+              <input
+                type="text"
+                placeholder="Confirm Password"
+                name="password"
+                value={ConfirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
 
-export default SignUp
+            <button
+              type="button"
+              onClick={() => handleSignup()}
+              className="w-full bg-[#03A2C2] text-white py-2 rounded-md hover:bg-[#4d8691f5] transition"
+            >
+             {isLoading ? "Registering.....": "Sign Up"} 
+            </button>
+            <h4 className="text-center">
+              Already have an account?{" "}
+              <Link href="/" className="text-[#03A2C2] font-bold">
+                {" "}
+                SignIn
+              </Link>
+            </h4>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default Signup;

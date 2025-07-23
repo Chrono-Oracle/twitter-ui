@@ -29,6 +29,10 @@ const commentSchema = new Schema (
             type: Number,
             default: 0,
         },
+        // commentCount: {
+        //     type: Number,
+        //     default: 0
+        // },
     }, { timestamps: true }
     );
 

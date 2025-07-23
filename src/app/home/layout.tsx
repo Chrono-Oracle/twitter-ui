@@ -4,6 +4,7 @@ import "../globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { ThemeProvider } from "@/components/theme-provider"
 
+import ReactQueryProvider from "@/components/ReactQueryProvider"
 
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/AppSidebar";
@@ -34,7 +35,8 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
-          <ThemeProvider
+          <ReactQueryProvider>
+            <ThemeProvider
             attribute="class"
             defaultTheme="system"
             enableSystem
@@ -48,6 +50,7 @@ export default function RootLayout({
               </main>
             </SidebarProvider>
           </ThemeProvider>
+          </ReactQueryProvider>
         </body>
       </html>
     </ClerkProvider>

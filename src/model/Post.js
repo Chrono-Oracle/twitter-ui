@@ -3,7 +3,7 @@ import mongoose, { Schema } from "mongoose";
 const postSchema = new Schema(
     {
         UserId: {
-            type: Schema.Types.ObjectId,
+            type: mongoose.Schema.Types.ObjectId,
             ref: "User",
             required: true,
         },
@@ -12,17 +12,17 @@ const postSchema = new Schema(
             required: true,
         },
         MediaFile: {
-            type: String,
+            url: String,
             fileType: String,
         },
-        Likes: {
-            type: Number,
-            default: 0,
-        },
-        Comments: {
-            type: Number,
-            default: 0,
-        },
+        // Likes: {
+        //     type: Number,
+        //     default: 0,
+        // },
+        // Comments: {
+        //     type: Number,
+        //     default: 0,
+        // },
     }, { timestamps: true }
     );
 

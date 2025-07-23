@@ -1,7 +1,7 @@
 import connectDB from "../../../db/connectDB";
 import User from "../../../model/User";
 import { NextResponse } from "next/server";
-
+import bcrypt from "bcryptjs";
 
 //Get all the users from a database
 // This route is used to fetch all users from the database
@@ -30,7 +30,7 @@ export const POST = async (request) => {
         const userData = await request.json();
 
         // deconstruct
-        const { Email, Phone } = userData;
+        const { Email, Phone, Password } = userData;
         // check if the user already exists
         const existingUser = await User.findOne({
             $or: [{ Email }, { Phone }]
@@ -45,8 +45,10 @@ export const POST = async (request) => {
             )
         };
 
+        const hashedPassword = bcrypt.hashSync(Password, 10);
+
         // create a new user instance
-        const newUser = new User(userData);
+        const newUser = new User({...userData, Password: hashedPassword});
         // save the user to the database
         await newUser.save();
         // return the created user as a JSON response

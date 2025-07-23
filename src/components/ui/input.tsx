@@ -6,6 +6,7 @@ function Input({ className, type, ...props }: React.ComponentProps<"input">) {
   return (
     <input
       type={type}
+      value="content"
       data-slot="input"
       placeholder="What's happening?"
       className={cn(
