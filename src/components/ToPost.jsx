@@ -152,7 +152,7 @@ export default function ToPost({initialContent=''}) {
         <button
           onClick={handleSubmit}
           disabled={isLoading}
-          className={`bg-primary rounded-full font-medium py-2.5 px-6 text-[.9rem] text-white transition duration-200 ${
+          className={`bg-primary rounded-full font-medium py-2.5 px-6 text-[.9rem] text-white transition duration-200 cursor-pointer ${
             isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-600'
           }`}
         >
