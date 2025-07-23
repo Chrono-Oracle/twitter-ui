@@ -1,5 +1,7 @@
 'use client';
 
+import { useState, useEffect } from 'react';
+
 import { ArrowLeft, CalendarDays, MapPin, Dot, MessageCircle, Repeat2, Heart, Upload } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '../ui/avatar';
 import { UserButton } from "@clerk/nextjs";
@@ -9,23 +11,71 @@ import Image from 'next/image';
 
 
 import Aside from "@/components/Aside";
-import { User } from '@clerk/nextjs/server';
+
+// import { User } from '@clerk/nextjs/server';
 import { Button } from '../ui/button';
+import { DialogDemo } from './DialogDemo';
+
+interface ProfileData {
+  name: string;
+  username: string;
+  bio: string;
+  location: string;
+}
+
 
 
 const ProfileContents = () => {
 
-    // const { isLoaded, isSignedIn, user } = useUser();
-    
-    //   if (isLoaded && isSignedIn && user) {
-    //     const userEmail = user?.emailAddresses[0]?.emailAddress || null;
-    //     const userFullName = user?.fullName;
-    //   }
+    const [profile, setProfile] = useState<ProfileData>(() => {
+      // Only run in browser environment
+      if (typeof window !== 'undefined') {
+        const savedProfile = localStorage.getItem('profile');
+        return savedProfile 
+          ? JSON.parse(savedProfile) 
+          : {
+              name: "Danny Biscuit",
+              username: "@oraclex",
+              bio: "Full Stack Web Designer",
+              location: "Douala"
+            };
+      }
+      return {
+        name: "Danny Biscuit",
+        username: "@oraclex",
+        bio: "Full Stack Web Designer",
+        location: "Douala"
+      };
+    });
+
+    // const handleProfileUpdate = (newData: ProfileData) => {
+    //   console.log("New data received:", newData);
+    //   setProfile(prev => ({
+    //     ...prev,      // Keep existing values
+    //     ...newData    // Apply updates
+    //   }));
+    // };
+
+    const handleProfileUpdate = (newData: ProfileData) => {
+  // Merge existing profile with new data
+      const updatedProfile = { ...profile, ...newData };
+      
+      // Update state
+      setProfile(updatedProfile);
+      
+      // Update localStorage
+      localStorage.setItem('profile', JSON.stringify(updatedProfile));
+      console.log("Profile updated and saved:", updatedProfile);
+    };
+
+    useEffect(() => {
+      localStorage.setItem('profile', JSON.stringify(profile));
+      console.log("Profile saved to localStorage:", profile);
+    }, [profile]);
+
 
   return (
     <div className="">
-
-        
 
 
         <section id='main'>
@@ -70,21 +120,25 @@ const ProfileContents = () => {
                     {/* Profile Background */}
 
                     <div className="grid justify-items-end my-5">
-                        <Button className='bg-transparent rounded-3xl text-[#1DA1F2] border border-[#1DA1F2] hover:bg-[#1DA1F2] hover:text-white hover:cursor-pointer'>Edit Profile</Button>
+                        {/* <Button className='bg-transparent rounded-3xl text-[#1DA1F2] border border-[#1DA1F2] hover:bg-[#1DA1F2] hover:text-white hover:cursor-pointer'>Edit Profile</Button> */}
+                        <DialogDemo
+                            profile={profile} 
+                            onSave={handleProfileUpdate}
+                        />
                     </div>
 
                     {/* User Bio */}
                     <div className="grid gap-y-2">
                         <div className="">
-                            <h4 className="text-[1.3rem] font-medium">Danny Biscuit</h4>
-                            <span className="text-gray-500">@oraclex</span>
+                            <h4 className="text-[1.3rem] font-medium">{profile.name}</h4>
+                            <span className="text-gray-500">{profile.username}</span>
                         </div>
                         <div className="grid gap-y-1">
-                            <h5 className="text-[.9rem] font-medium">Full Stack Web Designer</h5>
+                            <h5 className="text-[.9rem] font-medium">{profile.bio}</h5>
                             <div className="flex gap-x-6">
                                 <div className="flex items-center gap-x-1 text-gray-500">
                                     <MapPin width={15}/>
-                                    <span className="text-[.8rem]">Douala</span>
+                                    <span className="text-[.8rem]">{profile.location}</span>
                                 </div>
                                 <div className="flex items-center gap-x-1 text-gray-500">
                                     <CalendarDays width={15}/>

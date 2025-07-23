@@ -6,6 +6,8 @@ import Link from 'next/link';
 
 import { FaGoogle, FaFacebookF, FaTiktok } from "react-icons/fa";
 
+import { SignUpButton } from '@clerk/nextjs'
+
 const SignIn = () => {
 
     const [showPassword, setShowPassword] = useState(false);
@@ -62,9 +64,15 @@ const SignIn = () => {
                         <span className="text-white">or sign in with</span>
                         
                         <div className="flex justify-center gap-x-[2rem]">
-                            <FaGoogle color='white' />
-                            <FaFacebookF color='white' />
-                            <FaTiktok color='white' />
+                            <SignUpButton mode='redirect' redirect_url='/home'>
+                                <FaGoogle color='white' />
+                            </SignUpButton>
+                            <SignUpButton mode='redirect' redirect_url='/home'>
+                                <FaFacebookF color='white' />
+                            </SignUpButton>
+                            <SignUpButton mode='redirect' redirect_url='/home'>
+                                <FaTiktok color='white' />
+                            </SignUpButton>
                         </div>
                     </div>
 
