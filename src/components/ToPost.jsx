@@ -9,6 +9,8 @@ import { MdClose } from 'react-icons/md';
 import axios from 'axios';
 import { BASE_URL } from '@/lib/utils';
 
+import { useQueryClient } from '@tanstack/react-query';
+
 import EmojiPicker from 'emoji-picker-react';
 
 export default function ToPost({initialContent=''}) {
@@ -18,6 +20,7 @@ export default function ToPost({initialContent=''}) {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showPicker, setShowPicker] = useState(false);
+  const queryClient = useQueryClient()
   // const [inputValue, setInputValue] = useState(content ||'');
 
   // Load user once on mount
@@ -78,6 +81,8 @@ export default function ToPost({initialContent=''}) {
 
         await axios.post(`${BASE_URL}/images`, MediaPayload);
         resetImage();
+        toast.success("Post Created Successfully");
+        queryClient.invalidateQueries({ queryKey: ['posts'] });
       }
     } catch (error) {
       console.error("Error submitting post or uploading image:", error);
@@ -164,7 +169,7 @@ export default function ToPost({initialContent=''}) {
           <div className=''>
             <EmojiPicker onEmojiClick={handleEmojiClick} />
           </div>
-        )};
+        )}
          
 
       {/* Hidden File Input */}
